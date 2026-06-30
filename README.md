@@ -32,17 +32,24 @@
 密码：ADMIN_PASSWORD
 ```
 
-也可以通过环境变量覆盖：
+公开上传或演示时建议通过环境变量覆盖默认账号和密码。可以复制 `.env.example` 作为本地配置参考：
 
 ```powershell
-$env:FAMILY_LEDGER_ADMIN_ID="你的管理员ID"
-$env:FAMILY_LEDGER_ADMIN_PASSWORD="至少8位且包含字母和数字的密码"
+copy .env.example .env
+```
+
+PowerShell 示例：
+
+```powershell
+$env:FAMILY_LEDGER_ADMIN_ID="ADMIN_"
+$env:FAMILY_LEDGER_ADMIN_PASSWORD="ChangeMe123"
+$env:FAMILY_LEDGER_TOKEN_SECRET="replace-with-a-long-random-secret"
 python backend/server.py
 ```
 
 ## 运行方式
 
-推荐直接启动后端服务。后端会同时提供 API 和前端静态页面：
+本项目目前只使用 Python 标准库，不依赖第三方 pip 包。推荐直接启动后端服务，后端会同时提供 API 和前端静态页面：
 
 ```powershell
 python backend/server.py
@@ -64,11 +71,11 @@ python -m http.server 5173 -d frontend
 
 ## 数据说明
 
-- 后端 SQLite 数据库位于 `data/app.db`。
-- Token 签名密钥位于 `data/.token_secret`。
-- 后端当前持久化家庭、用户和密码找回申请。
-- 收支记录、预算、孩子任务、消费申请、储蓄目标、周期账单和 AI 设置仍主要保存在浏览器 `localStorage` 中，键名为 `family-ledger-state-v3`。
-- `data/` 目录属于运行数据，不建议提交到 Git。
+- 后端 SQLite 数据库会在首次运行时自动创建，默认位置为 `data/app.db`。
+- Token 签名密钥默认保存在 `data/.token_secret`，也可以通过 `FAMILY_LEDGER_TOKEN_SECRET` 环境变量指定。
+- `data/app.db` 和 `data/.token_secret` 属于本地运行数据，已通过 `.gitignore` 排除，不应提交到 Git。
+- 后端当前持久化家庭、用户、密码找回申请，以及收支、预算、孩子任务、消费申请、储蓄目标和周期账单等 JSON 状态数据。
+- 前端仍会使用浏览器 `localStorage` 缓存部分界面状态，键名为 `family-ledger-state-v3`。
 
 ## 常用检查命令
 
@@ -86,9 +93,11 @@ frontend/app.js                      前端核心功能逻辑
 frontend/styles.css                  全站样式与主题
 frontend/assets/system-guide-poster.png  登录页功能教程海报
 backend/server.py                    后端 API、认证、SQLite 与静态页面服务
-data/app.db                          本地 SQLite 运行数据
-AGENT.md                             项目记忆与开发说明
+data/.gitkeep                        保留运行数据目录，实际数据库不提交
 DESIGN.md                            UI 设计说明
+.env.example                         本地环境变量示例
+.gitignore                           Git 忽略规则
+requirements.txt                     Python 依赖说明
 ```
 
 ## 后续可扩展方向
